@@ -1,8 +1,10 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useId } from 'react'
 
 function App() {
   const [items, setItems] = useState([])
+  const [filteredItems, setFilteredItems] = useState([])
   const inputRef = useRef()
+  const id = useId()
 
   function onSubmit(e) {
     e.preventDefault()
@@ -12,16 +14,17 @@ function App() {
     setItems((prev) => {
       return [...prev, value]
     })
+    setFilteredItems((prev) => {
+      return [...prev, value]
+    })
     inputRef.current.value = ''
   }
 
   function onChange(e) {
     const value = e.target.value
-    setItems((prev) => {
-      return prev.filter((item) =>
-        item.toLowerCase().includes(value.toLowerCase())
-      )
-    })
+    setFilteredItems(
+      items.filter((item) => item.toLowerCase().includes(value.toLowerCase()))
+    )
   }
 
   return (
@@ -35,8 +38,8 @@ function App() {
         <button type='submit'>Add</button>
       </form>
       <h3>Items:</h3>
-      {items.map((item) => (
-        <div>{item}</div>
+      {filteredItems.map((item, id) => (
+        <div key={id}>{item}</div>
       ))}
     </>
   )
