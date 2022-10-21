@@ -1,10 +1,16 @@
-import { useRef, useState, useId } from 'react'
+import { useRef, useState, useMemo } from 'react'
 
 function App() {
   const [items, setItems] = useState([])
-  const [filteredItems, setFilteredItems] = useState([])
+  const [query, setQuery] = useState('')
   const inputRef = useRef()
-  const id = useId()
+
+  const filteredItems = useMemo(() => {
+    if (!query) return items
+    return items.filter((item) => {
+      return item.toLowerCase().includes(query.toLowerCase())
+    })
+  }, [items, query])
 
   function onSubmit(e) {
     e.preventDefault()
@@ -14,23 +20,18 @@ function App() {
     setItems((prev) => {
       return [...prev, value]
     })
-    setFilteredItems((prev) => {
-      return [...prev, value]
-    })
-    inputRef.current.value = ''
-  }
 
-  function onChange(e) {
-    const value = e.target.value
-    setFilteredItems(
-      items.filter((item) => item.toLowerCase().includes(value.toLowerCase()))
-    )
+    inputRef.current.value = ''
   }
 
   return (
     <>
       Search:
-      <input onChange={onChange} type='search' />
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        type='search'
+      />
       <br />
       <br />
       <form onSubmit={onSubmit}>
